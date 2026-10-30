@@ -1,0 +1,199 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Achievement {
+  id: ID!
+  sortOrder: Int!
+  text: String!
+}
+
+type AuthPayload {
+  token: String!
+}
+
+input CreateExperienceInput {
+  achievements: [String!]
+  company: String!
+  companyUrl: String
+  endDate: DateTime
+  position: String!
+  sortOrder: Int
+  startDate: DateTime!
+}
+
+input CreateProjectInput {
+  description: String!
+  name: String!
+  repoUrl: String
+  skillNames: [String!]
+  sortOrder: Int
+  url: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Experience {
+  achievements: [Achievement!]!
+  company: String!
+  companyUrl: String
+  endDate: DateTime
+  id: ID!
+  isCurrent: Boolean!
+
+  """Человекочитаемый период, например «Апрель 2024 — настоящее время»"""
+  period: String!
+  position: String!
+  sortOrder: Int!
+  startDate: DateTime!
+}
+
+"""Тип профессиональной ссылки в профиле"""
+enum LinkKind {
+  EMAIL
+  GITHUB
+  HH
+  LINKEDIN
+  OTHER
+  TELEGRAM
+  WEBSITE
+}
+
+input LoginInput {
+  login: String!
+  password: String!
+}
+
+type Mutation {
+  createExperience(input: CreateExperienceInput!): Experience!
+  createProject(input: CreateProjectInput!): Project!
+  deleteExperience(id: ID!): Boolean!
+  deleteProject(id: ID!): Boolean!
+  deleteSkill(id: ID!): Boolean!
+  login(input: LoginInput!): AuthPayload!
+  replaceAchievements(input: ReplaceAchievementsInput!): Experience!
+  replaceLinks(input: ReplaceLinksInput!): Profile!
+  setProfileSkills(input: SetProfileSkillsInput!): Profile!
+  setProjectSkills(input: SetProjectSkillsInput!): Project!
+  updateExperience(input: UpdateExperienceInput!): Experience!
+  updateProfile(input: UpdateProfileInput!): Profile!
+  updateProject(input: UpdateProjectInput!): Project!
+  upsertSkill(input: UpsertSkillInput!): Skill!
+}
+
+type Profile {
+  description: String!
+  experience: [Experience!]!
+  headline: String!
+  id: ID!
+  links: [ProfileLink!]!
+  location: String
+  name: String!
+  projects: [Project!]!
+  skills: [Skill!]!
+}
+
+type ProfileLink {
+  id: ID!
+  kind: LinkKind!
+  label: String!
+  sortOrder: Int!
+  url: String!
+}
+
+input ProfileLinkInput {
+  kind: LinkKind!
+  label: String!
+  sortOrder: Int
+  url: String!
+}
+
+type Project {
+  description: String!
+  id: ID!
+  name: String!
+  repoUrl: String
+  skills: [Skill!]!
+  sortOrder: Int!
+  url: String
+}
+
+type Query {
+  """Проверка, что передан действующий админ-токен."""
+  adminSession: Boolean!
+
+  """Публичная визитка. Include в Prisma строится по selection set."""
+  profile: Profile!
+
+  """Справочник навыков. Нужен админке, чтобы вешать стек на проекты."""
+  skills: [Skill!]!
+}
+
+input ReplaceAchievementsInput {
+  experienceId: ID!
+  texts: [String!]!
+}
+
+input ReplaceLinksInput {
+  links: [ProfileLinkInput!]!
+}
+
+input SetProfileSkillsInput {
+  names: [String!]!
+}
+
+input SetProjectSkillsInput {
+  names: [String!]!
+  projectId: ID!
+}
+
+type Skill {
+  category: SkillCategory!
+  id: ID!
+  name: String!
+}
+
+"""Категория навыка в справочнике"""
+enum SkillCategory {
+  DATABASE
+  FRAMEWORK
+  INFRA
+  LANGUAGE
+  OTHER
+  RUNTIME
+  TOOL
+}
+
+input UpdateExperienceInput {
+  company: String
+  companyUrl: String
+  endDate: DateTime
+  id: ID!
+  position: String
+  sortOrder: Int
+  startDate: DateTime
+}
+
+input UpdateProfileInput {
+  description: String
+  headline: String
+  location: String
+  name: String
+}
+
+input UpdateProjectInput {
+  description: String
+  id: ID!
+  name: String
+  repoUrl: String
+  sortOrder: Int
+  url: String
+}
+
+input UpsertSkillInput {
+  category: SkillCategory!
+  name: String!
+}

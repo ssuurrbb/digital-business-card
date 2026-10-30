@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LinkKind {
+  GITHUB
+  LINKEDIN
+  EMAIL
+  WEBSITE
+  HH
+  TELEGRAM
+  OTHER
+}
+
+enum SkillCategory {
+  LANGUAGE
+  RUNTIME
+  FRAMEWORK
+  DATABASE
+  INFRA
+  TOOL
+  OTHER
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  headline    String
+  description String
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  links        ProfileLink[]
+  skills       ProfileSkill[]
+  experiences  Experience[]
+  projects     Project[]
+}
+
+model ProfileLink {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  kind      LinkKind
+  label     String
+  url       String
+  sortOrder Int      @default(0)
+
+  @@unique([profileId, kind, url])
+  @@index([profileId, sortOrder])
+}
+
+model Skill {
+  id       String        @id @default(cuid())
+  name     String        @unique
+  category SkillCategory
+
+  profiles ProfileSkill[]
+  projects ProjectSkill[]
+}
+
+model ProfileSkill {
+  profileId String
+  skillId   String
+  sortOrder Int     @default(0)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, skillId])
+  @@index([profileId, sortOrder])
+}
+
+model Experience {
+  id         String    @id @default(cuid())
+  profileId  String
+  profile    Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  company    String
+  companyUrl String?
+  position   String
+  startDate  DateTime  @db.Date
+  endDate    DateTime? @db.Date
+  sortOrder  Int       @default(0)
+
+  achievements Achievement[]
+
+  @@index([profileId, sortOrder])
+}
+
+model Achievement {
+  id           String     @id @default(cuid())
+  experienceId String
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  text         String
+  sortOrder    Int        @default(0)
+
+  @@index([experienceId, sortOrder])
+}
+
+model Project {
+  id          String  @id @default(cuid())
+  profileId   String
+  profile     Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name        String
+  description String
+  url         String?
+  repoUrl     String?
+  sortOrder   Int     @default(0)
+
+  skills ProjectSkill[]
+
+  @@index([profileId, sortOrder])
+}
+
+model ProjectSkill {
+  projectId String
+  skillId   String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, skillId])
+}
