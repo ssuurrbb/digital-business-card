@@ -1,0 +1,15 @@
+www.ssuurrbb.ru {
+	redir https://ssuurrbb.ru{uri} permanent
+}
+
+ssuurrbb.ru {
+	encode gzip
+
+	handle /graphql* {
+		reverse_proxy 127.0.0.1:3100
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:3101
+	}
+}
