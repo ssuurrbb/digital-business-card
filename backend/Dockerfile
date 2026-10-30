@@ -16,6 +16,8 @@ ENV NODE_ENV=production
 RUN apk add --no-cache openssl
 COPY package.json package-lock.json ./
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma/client ./node_modules/@prisma/client
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY docker-entrypoint.sh ./
